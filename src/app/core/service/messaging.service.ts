@@ -18,7 +18,6 @@ export class MessagingService {
   private registration?: ServiceWorkerRegistration;
   private notificationSubject: Subject<Message> = new Subject();
 
-  // TODO https://developers.google.com/oauthplayground/ (scope: https://www.googleapis.com/auth/firebase.messaging)
   constructor() {
     this.messaging = getMessaging();
 
@@ -32,10 +31,11 @@ export class MessagingService {
       });
 
     navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log('serviceWorker message event: ', event);
+      console.log('[messaging service] serviceWorker message event: ', event);
 
+      // event.data.notification event.data.data
       if (event.data && event.data.notification) {
-        const notification = event.data.notification;
+        const notification = event.data.notification; // event.data.notification; event.data.data;
         const message: Message = {
           title: notification.title,
           body: notification.body,
@@ -85,14 +85,19 @@ export class MessagingService {
 
       // Show notification if app NOT in background
       if (this.registration) {
-        const notificationTitle = payload.notification?.title; // payload.notification?.title;
+        const notification = payload.notification;
+        const data = payload.data;
+        const notificationTitle = notification?.title
+          ? notification?.title
+          : 'Notification default title';
         const notificationOptions = {
-          body: payload.notification?.body, // payload.notification?.body,
-          icon: payload.data?.icon,
-          click_action: payload.data?.link,
+          body: notification?.body,
+          icon: data?.icon,
+          click_action: data?.link,
+          tag: payload.messageId,
           data: {
-            // click_action: payload.data?.link,
-            link: payload.data?.link, //the url which we gonna use later
+            // click_action: notification?.link,
+            link: data?.link, //the url which we gonna use later
           },
           // actions: [
           //   {
@@ -103,7 +108,7 @@ export class MessagingService {
           origin: self.location.origin,
         };
         this.registration.showNotification(
-          notificationTitle ? notificationTitle : 'Notification default title',
+          notificationTitle,
           notificationOptions
         );
       }

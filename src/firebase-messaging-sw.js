@@ -4,11 +4,12 @@ self.addEventListener('notificationclick', function(event) {
   console.log('notificationclick event: ', event);
   event.notification.close();
 
-  if (!event.notification.data || !event.notification.data.link) {
+  // for foreground message: event.notification?.data?.link
+  // for background message: event.notification?.data?.FCM_MSG?.data?.link
+  const urlToOpen = event.notification?.data?.link;
+  if (!urlToOpen) {
     return;
   }
-
-  const urlToOpen = event.notification.data.link;
 
   const promiseChain = clients
     .matchAll({
@@ -69,17 +70,28 @@ const messaging = firebase.messaging();
 //     body: payload.data.body,
 //     icon: payload.data.icon,
 //     click_action: payload.data.link,
+//     tag: payload.messageId,
 //     data: { 
-//       click_action: payload.data.link,
+//       // click_action: payload.data.link,
 //       link: payload.data.link //the url which we gonna use later
 //     },
-//     actions: [{
-//         action: "open_url", 
-//         title: "Open now",
-//     }],
+//     // actions: [{
+//     //     action: "open_url", 
+//     //     title: "Open now",
+//     // }],
 //     origin: self.location.origin,
 //   };
 
 //   self.registration.showNotification(notificationTitle,
 //     notificationOptions);
+// });
+
+// self.addEventListener('push', function(event) {
+//   console.log('Received background message ', event);
+//   console.log('origin: ', self.location.origin);
+//   // event.waitUntil(
+//   //     self.registration.showNotification('title', {
+//   //       body: 'body'
+//   //     })
+//   // );
 // });
