@@ -31,16 +31,19 @@ export class MessagingService {
       });
 
     navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log('[messaging service] serviceWorker message event: ', event);
+      console.log(
+        '[messaging service] serviceWorker handle message event: ',
+        event
+      );
 
-      // event.data.notification event.data.data
-      if (event.data && event.data.notification) {
-        const notification = event.data.notification; // event.data.notification; event.data.data;
+      // const notification = event.data?.notification;
+      const data = event.data?.data;
+      if (data && data.messageId) {
         const message: Message = {
-          title: notification.title,
-          body: notification.body,
-          icon: notification.icon,
-          link: notification.click_action,
+          title: data.title,
+          body: data.body,
+          icon: data.icon,
+          link: data.click_action,
         };
         this.notificationSubject.next(message);
       }
@@ -72,46 +75,30 @@ export class MessagingService {
   }
 
   private listen() {
-    onMessage(this.messaging, (payload: MessagePayload) => {
-      console.log('Message received in messaging service: ', payload);
-      // this.message = payload;
-      // const message: Message = {
-      //   body: payload.notification?.body,
-      //   title: payload.notification?.title,
-      //   icon: payload.notification?.icon,
-      //   link: payload.fcmOptions?.link,
-      // };
-      // this.notificationSubject.next(message);
-
-      // Show notification if app NOT in background
-      if (this.registration) {
-        const notification = payload.notification;
-        const data = payload.data;
-        const notificationTitle = notification?.title
-          ? notification?.title
-          : 'Notification default title';
-        const notificationOptions = {
-          body: notification?.body,
-          icon: data?.icon,
-          click_action: data?.link,
-          tag: payload.messageId,
-          data: {
-            // click_action: notification?.link,
-            link: data?.link, //the url which we gonna use later
-          },
-          // actions: [
-          //   {
-          //     action: 'open_url',
-          //     title: 'Open now',
-          //   },
-          // ],
-          origin: self.location.origin,
-        };
-        this.registration.showNotification(
-          notificationTitle,
-          notificationOptions
-        );
-      }
-    });
+    // TODO dont need this if message is handled by push event in sw
+    // onMessage(this.messaging, (payload: MessagePayload) => {
+    //   console.log('[messaging service] Message received: ', payload);
+    //   // Show notification if app in foreground
+    //   if (this.registration) {
+    //     const notification = payload.notification;
+    //     const data = payload.data;
+    //     const notificationTitle = data?.title
+    //       ? data?.title
+    //       : 'Notification default title';
+    //     const notificationOptions = {
+    //       body: data?.body,
+    //       icon: data?.icon,
+    //       click_action: data?.link,
+    //       tag: payload.messageId,
+    //       data: {
+    //         link: data?.link,
+    //       },
+    //     };
+    //     this.registration.showNotification(
+    //       notificationTitle,
+    //       notificationOptions
+    //     );
+    //   }
+    // });
   }
 }

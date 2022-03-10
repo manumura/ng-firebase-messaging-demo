@@ -21,7 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.messageSubscription = this.messagingService.notification$.subscribe(
       (message: Message) => {
-        console.log('message received: ', message);
+        console.log('message to display in component: ', message);
         this.message = message;
       }
     );
