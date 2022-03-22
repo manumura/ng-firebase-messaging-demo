@@ -13,6 +13,7 @@ if (environment.production) {
 // TODO https://github.com/tomastrajan/angular-ngrx-material-starter
 // TODO https://javascript.plainenglish.io/setup-dotenv-to-access-environment-variables-in-angular-9-f06c6ffb86c0
 // TODO https://developers.google.com/oauthplayground/ (scope: https://www.googleapis.com/auth/firebase.messaging)
+// TODO ng build --namedChunks=true --outputHashing=none --vendorChunk=true --stats-json
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
   .catch((err) => console.error(err));
